@@ -31,6 +31,12 @@ class Book
     #[ORM\Column]
     private ?int $bookFlibustaId = null;
 
+    #[ORM\ManyToOne(inversedBy: 'autorBooks')]
+    private ?Autor $autor = null;
+
+    #[ORM\ManyToOne(inversedBy: 'serieBooks')]
+    private ?Serie $serie = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +98,30 @@ class Book
     public function setBookFlibustaId(int $bookFlibustaId): static
     {
         $this->bookFlibustaId = $bookFlibustaId;
+
+        return $this;
+    }
+
+    public function getAutor(): ?Autor
+    {
+        return $this->autor;
+    }
+
+    public function setAutor(?Autor $autor): static
+    {
+        $this->autor = $autor;
+
+        return $this;
+    }
+
+    public function getSerie(): ?Serie
+    {
+        return $this->serie;
+    }
+
+    public function setSerie(?Serie $serie): static
+    {
+        $this->serie = $serie;
 
         return $this;
     }
