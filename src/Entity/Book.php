@@ -25,7 +25,7 @@ class Book
     #[ORM\Column(length: 2)]
     private ?string $bookLanguage = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $bookYear = null;
 
     #[ORM\Column]
