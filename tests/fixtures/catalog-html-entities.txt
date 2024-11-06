@@ -1,0 +1,2 @@
+Last Name;First Name;Middle Name;Title;Subtitle;Language;Year;Series;ID
+Arthaud;Florence;;Cette nuit, la mer est noire;;fr;2015;La Travers&eacute;e des Mondes 0;510493

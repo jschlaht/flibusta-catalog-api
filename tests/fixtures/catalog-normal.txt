@@ -1,0 +1,3 @@
+Last Name;First Name;Middle Name;Title;Subtitle;Language;Year;Series;ID
+;;;Beginning Java MVC 1.0;;en;2021;;611430
+Дворянкин;Александр;Владимирович;«Если», 2005 № 01;143;ru;2005;Если, 2005 1|Журнал «Если» 143;309034
