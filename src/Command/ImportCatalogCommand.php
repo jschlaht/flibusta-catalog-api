@@ -50,7 +50,8 @@ class ImportCatalogCommand extends Command
             $io->note(sprintf('You passed an argument: %s', $catalogFile));
             if (file_exists($catalogFile)) {
                 $catalogData = file($catalogFile, FILE_IGNORE_NEW_LINES);
-                $io->note(sprintf('Number of lines: %s', count($catalogData)));
+                $numberAllDataLines = count($catalogData);
+                $io->note(sprintf('Number of lines: %s', $numberAllDataLines));
                 foreach ($catalogData as $key => $line) {
                     if ($key === 0) {
                         continue;
@@ -69,6 +70,11 @@ class ImportCatalogCommand extends Command
                     $io->note(sprintf('Book flibusta id: %s', $data['bookFlibustaId']));
 
                     $this->importData($data, $output);
+                    if ($key % 8 === 0) {
+                        $this->entityManager->getUnitOfWork()->clear();
+                    }
+                    unset($data);
+                    $io->note(sprintf('Imported %s from %s', $key, $numberAllDataLines));
                 }
             } else {
                 $io->note(sprintf('You need a catalogfile for import'));
@@ -86,7 +92,9 @@ class ImportCatalogCommand extends Command
 
     private function parseData(string $line): array
     {
-        $parts = explode(";", html_entity_decode($line));
+        $line = html_entity_decode($line);
+        $line = str_replace("litres;", "", $line);
+        $parts = explode(";", $line);
         $data = [];
 
         $data['autorLastName'] = $parts[0];
@@ -97,13 +105,13 @@ class ImportCatalogCommand extends Command
             case 10:
                 if ((strlen($parts[6]) == 2) || (strlen($parts[7]) == 4)) {
                     $data['bookTitle'] = trim($parts[3]) . ' ' . trim($parts[4]);
-                    $data['bookSubTitle'] = $parts[5];
+                    $data['bookSubTitle'] = trim($parts[5]);
                     $data['bookLanguage'] = $parts[6];
                     $data['bookYear'] = $parts[7];
                     $data['bookSerie'] = $parts[8];
                 } else if ((strlen($parts[5]) == 2) || (strlen($parts[6]) == 4)) {
-                    $data['bookTitle'] = $parts[3];
-                    $data['bookSubTitle'] = $parts[4];
+                    $data['bookTitle'] = trim($parts[3]);
+                    $data['bookSubTitle'] = trim($parts[4]);
                     $data['bookLanguage'] = $parts[5];
                     $data['bookYear'] = $parts[6];
                     $data['bookSerie'] = trim($parts[7]) . ' ' . trim($parts[8]);
@@ -112,24 +120,24 @@ class ImportCatalogCommand extends Command
             case 11:
                 if ((strlen($parts[7]) == 2) || (strlen($parts[8]) == 4)) {
                     $data['bookTitle'] = trim($parts[3]) . ' ' . trim($parts[4]) . ' ' . trim($parts[5]);
-                    $data['bookSubTitle'] = $parts[6];
+                    $data['bookSubTitle'] = trim($parts[6]);
                     $data['bookLanguage'] = $parts[7];
                     $data['bookYear'] = $parts[8];
                     $data['bookSerie'] = array_slice($parts, -2, 1)[0];
                 } else if ((strlen($parts[5]) == 2) || (strlen($parts[6]) == 4)) {
-                    $data['bookTitle'] = $parts[3];
-                    $data['bookSubTitle'] = $parts[4];
+                    $data['bookTitle'] = trim($parts[3]);
+                    $data['bookSubTitle'] = trim($parts[4]);
                     $data['bookLanguage'] = $parts[5];
                     $data['bookYear'] = $parts[6];
                     $data['bookSerie'] = trim($parts[7]) . ' ' . trim($parts[8]) . ' ' . trim($parts[9]);
                 }
                 break;
             default:
-                $data['bookTitle'] = $parts[3];
-                $data['bookSubTitle'] = array_slice($parts, -5, 1)[0];
+                $data['bookTitle'] = trim($parts[3]);
+                $data['bookSubTitle'] = trim(array_slice($parts, -5, 1)[0]);
                 $data['bookLanguage'] = array_slice($parts, -4, 1)[0];
                 $data['bookYear'] = array_slice($parts, -3, 1)[0];
-                $data['bookSerie'] = array_slice($parts, -2, 1)[0];
+                $data['bookSerie'] = trim(array_slice($parts, -2, 1)[0]);
 
                 break;
         }
