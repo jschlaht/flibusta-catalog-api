@@ -62,11 +62,9 @@ class ImportCatalogCommand extends Command
                     $io->note(sprintf('Autor last name: %s', $data['autorLastName']));
                     $io->note(sprintf('Autor first name: %s', $data['autorFirstName']));
                     $io->note(sprintf('Autor middle name: %s', $data['autorMiddleName']));
-                    $io->note(sprintf('Book title: %s', $data['bookTitle']));
-                    $io->note(sprintf('Book subtitle: %s', $data['bookSubTitle']));
+                    $io->note(sprintf('Book data: %s', $data['bookData']));
                     $io->note(sprintf('Book language: %s', $data['bookLanguage']));
                     $io->note(sprintf('Book year: %s', $data['bookYear']));
-                    $io->note(sprintf('Book serie: %s', $data['bookSerie']));
                     $io->note(sprintf('Book flibusta id: %s', $data['bookFlibustaId']));
 
                     $this->importData($data, $output);
@@ -97,55 +95,11 @@ class ImportCatalogCommand extends Command
         $parts = explode(";", $line);
         $data = [];
 
-        $data['autorLastName'] = $parts[0];
-        $data['autorFirstName'] = $parts[1];
-        $data['autorMiddleName'] = $parts[2];
-
-        switch (count($parts)) {
-            case 10:
-                if ((strlen($parts[6]) == 2) || (strlen($parts[7]) == 4)) {
-                    $data['bookTitle'] = trim($parts[3]) . ' ' . trim($parts[4]);
-                    $data['bookSubTitle'] = trim($parts[5]);
-                    $data['bookLanguage'] = $parts[6];
-                    $data['bookYear'] = $parts[7];
-                    $data['bookSerie'] = $parts[8];
-                } else if ((strlen($parts[5]) == 2) || (strlen($parts[6]) == 4)) {
-                    $data['bookTitle'] = trim($parts[3]);
-                    $data['bookSubTitle'] = trim($parts[4]);
-                    $data['bookLanguage'] = $parts[5];
-                    $data['bookYear'] = $parts[6];
-                    $data['bookSerie'] = trim($parts[7]) . ' ' . trim($parts[8]);
-                }
-                break;
-            case 11:
-                if ((strlen($parts[7]) == 2) || (strlen($parts[8]) == 4)) {
-                    $data['bookTitle'] = trim($parts[3]) . ' ' . trim($parts[4]) . ' ' . trim($parts[5]);
-                    $data['bookSubTitle'] = trim($parts[6]);
-                    $data['bookLanguage'] = $parts[7];
-                    $data['bookYear'] = $parts[8];
-                    $data['bookSerie'] = array_slice($parts, -2, 1)[0];
-                } else if ((strlen($parts[5]) == 2) || (strlen($parts[6]) == 4)) {
-                    $data['bookTitle'] = trim($parts[3]);
-                    $data['bookSubTitle'] = trim($parts[4]);
-                    $data['bookLanguage'] = $parts[5];
-                    $data['bookYear'] = $parts[6];
-                    $data['bookSerie'] = trim($parts[7]) . ' ' . trim($parts[8]) . ' ' . trim($parts[9]);
-                }
-                break;
-            default:
-                $data['bookTitle'] = trim($parts[3]);
-                $data['bookSubTitle'] = trim(array_slice($parts, -5, 1)[0]);
-                $data['bookLanguage'] = array_slice($parts, -4, 1)[0];
-                $data['bookYear'] = array_slice($parts, -3, 1)[0];
-                $data['bookSerie'] = trim(array_slice($parts, -2, 1)[0]);
-
-                break;
-        }
-
-        if (strlen($data['bookYear']) > 4) {
-            $data['bookYear'] = substr($data['bookYear'], 0, 4);
-        }
-        $data['bookFlibustaId'] = array_slice($parts, -1, 1)[0];
+        $data['autorLastName'] = array_shift($parts);
+        $data['autorFirstName'] = array_shift($parts);
+        $data['autorMiddleName'] = array_shift($parts);
+        $data['bookFlibustaId'] = array_pop($parts);
+        $data['bookData'] = implode(';', $parts);
 
         return $data;
     }
@@ -155,8 +109,7 @@ class ImportCatalogCommand extends Command
         if (is_null($book)) {
             $book = new Book();
         }
-        $book->setBookTitle($data['bookTitle']);
-        $book->setBookSubtitle($data['bookSubTitle']);
+        $book->setBookData($data['bookData']);
         $book->setBookLanguage($data['bookLanguage']);
         if (strlen($data['bookYear']) !== 0) {
             $year = DateTime::createFromFormat('Y', $data['bookYear']);
@@ -178,17 +131,6 @@ class ImportCatalogCommand extends Command
             $autor->addAutorBook($book);
             $this->entityManager->persist($autor);
             $output->writeln(sprintf('Autor %s imported with id %s', $autor->getAutorLastName(), $autor->getId()));
-        }
-
-        if (strlen($data['bookSerie']) !== 0) {
-            $serie = $this->serieRepository->findOneBy(['serieName' => $data['bookSerie']]);
-            if (is_null($serie)) {
-                $serie = new Serie();
-                $serie->setSerieName($data['bookSerie']);
-            }
-            $serie->addSerieBook($book);
-            $this->entityManager->persist($serie);
-            $output->writeln(sprintf('Serie %s imported with id %s', $serie->getSerieName(), $serie->getId()));
         }
 
         $this->entityManager->flush();
