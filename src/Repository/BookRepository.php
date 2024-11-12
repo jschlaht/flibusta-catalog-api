@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Book;
+use App\Entity\Importer\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

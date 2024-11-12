@@ -30,20 +30,14 @@ class ImportCatalogCommandTest extends KernelTestCase
            $this->assertStringContainsString('Autor first name: Александр', $output);
            $this->assertStringContainsString('Autor middle name: Владимирович', $output);
 
-           $this->assertStringContainsString('Book title: Beginning Java MVC 1.0', $output);
-           $this->assertStringContainsString('Book title: «Если», 2005 № 01', $output);
-
-           $this->assertStringContainsString('Book subtitle:', $output);
-           $this->assertStringContainsString('Book subtitle: 143', $output);
+           $this->assertStringContainsString('Book data: Beginning Java MVC 1.0;;en;2021;', $output);
+           $this->assertStringContainsString('Book data: «Если», 2005 № 01;143;ru;2005;Если, 2005 1|Журнал «Если» 143', $output);
 
            $this->assertStringContainsString('Book language: en', $output);
            $this->assertStringContainsString('Book language: ru', $output);
 
            $this->assertStringContainsString('Book year: 2021', $output);
            $this->assertStringContainsString('Book year: 2005', $output);
-
-           $this->assertStringContainsString('Book serie:', $output);
-           $this->assertStringContainsString('Book serie: Если, 2005 1|Журнал «Если» 143', $output);
 
            $this->assertStringContainsString('Book flibusta id: 611430', $output);
            $this->assertStringContainsString('Book flibusta id: 309034', $output);

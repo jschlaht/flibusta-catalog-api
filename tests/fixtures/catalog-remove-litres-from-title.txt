@@ -1,2 +1,0 @@
-Last Name;First Name;Middle Name;Title;Subtitle;Language;Year;Series;ID
-Булычев;Кир;;Покушение на Тесея;litres; = Похищение Тесея;ru;2005;Галактическая полиция [= Цикл «Кора»; ИнтерГпол; Кора Орват] 3;108239

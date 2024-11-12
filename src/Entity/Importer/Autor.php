@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Importer;
 
 use App\Repository\AutorRepository;
 use Doctrine\Common\Collections\ArrayCollection;

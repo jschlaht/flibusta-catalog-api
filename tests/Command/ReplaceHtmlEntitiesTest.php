@@ -27,11 +27,9 @@ class ReplaceHtmlEntitiesTest extends KernelTestCase
         $this->assertStringContainsString('Autor first name: Florence', $output);
         $this->assertStringContainsString('Autor middle name:', $output);
 
-        $this->assertStringContainsString('Book title: Cette nuit, la mer est noire', $output);
-        $this->assertStringContainsString('Book subtitle:', $output);
+        $this->assertStringContainsString('Book data: Cette nuit, la mer est noire;;fr;2015;La Traversée des Mondes 0', $output);
         $this->assertStringContainsString('Book language: fr', $output);
         $this->assertStringContainsString('Book year: 2015', $output);
-        $this->assertStringContainsString('Book serie: La Traversée des Mondes 0', $output);
         $this->assertStringContainsString('Book flibusta id: 510493', $output);
     }
 }

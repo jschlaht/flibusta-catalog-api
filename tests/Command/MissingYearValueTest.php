@@ -27,11 +27,9 @@ class MissingYearValueTest extends KernelTestCase
         $this->assertStringContainsString('Autor first name: Священник Михаил', $output);
         $this->assertStringContainsString('Autor middle name:', $output);
 
-        $this->assertStringContainsString('Book title: «О ВСЕХ И ЗА ВСЯ» В АНАФОРЕ УТОЧНЕНИЕ СМЫСЛА', $output);
-        $this->assertStringContainsString('Book subtitle:', $output);
+        $this->assertStringContainsString('Book data: «О ВСЕХ И ЗА ВСЯ» В АНАФОРЕ; УТОЧНЕНИЕ СМЫСЛА;;ru;;Электронная библиотека студента Православного', $output);
         $this->assertStringContainsString('Book language: ru', $output);
         $this->assertStringContainsString('Book year:', $output);
-        $this->assertStringContainsString('Book serie: Электронная библиотека студента Православного Гуманитарного Университета 0', $output);
         $this->assertStringContainsString('Book flibusta id: 426583', $output);
     }
 }

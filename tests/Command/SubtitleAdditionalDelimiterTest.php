@@ -27,11 +27,9 @@ class SubtitleAdditionalDelimiterTest extends KernelTestCase
         $this->assertStringContainsString('Autor first name: A.', $output);
         $this->assertStringContainsString('Autor middle name: C.', $output);
 
-        $this->assertStringContainsString('Book title: Part of Me', $output);
-        $this->assertStringContainsString('Book subtitle:', $output);
+        $this->assertStringContainsString('Book data: Part of Me;;en;2014;Shadow Shifters; Damaged Hearts 2', $output);
         $this->assertStringContainsString('Book language: en', $output);
         $this->assertStringContainsString('Book year: 2014', $output);
-        $this->assertStringContainsString('Book serie: Shadow Shifters Damaged Hearts 2', $output);
         $this->assertStringContainsString('Book flibusta id: 370442', $output);
     }
 }

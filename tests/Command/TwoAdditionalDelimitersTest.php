@@ -27,11 +27,9 @@ class TwoAdditionalDelimitersTest extends KernelTestCase
         $this->assertStringContainsString('Autor first name:', $output);
         $this->assertStringContainsString('Autor middle name:', $output);
 
-        $this->assertStringContainsString('Book title: Beginning Java MVC 1.0', $output);
-        $this->assertStringContainsString('Book subtitle:', $output);
+        $this->assertStringContainsString('Book data: Beginning;Java;MVC 1.0;;en;2021;', $output);
         $this->assertStringContainsString('Book language: en', $output);
         $this->assertStringContainsString('Book year: 2021', $output);
-        $this->assertStringContainsString('Book serie:', $output);
         $this->assertStringContainsString('Book flibusta id: 611430', $output);
     }
 }

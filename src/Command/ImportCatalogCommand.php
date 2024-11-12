@@ -2,19 +2,16 @@
 
 namespace App\Command;
 
-use App\Entity\Autor;
-use App\Entity\Book;
-use App\Entity\Serie;
+use App\Entity\Importer\Autor;
+use App\Entity\Importer\Book;
 use App\Repository\AutorRepository;
 use App\Repository\BookRepository;
-use App\Repository\SerieRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -27,8 +24,7 @@ class ImportCatalogCommand extends Command
     public function __construct(
         private EntityManagerInterface $entityManager,
         private AutorRepository $autorRepository,
-        private BookRepository $bookRepository,
-        private SerieRepository $serieRepository
+        private BookRepository $bookRepository
     )
     {
         parent::__construct();
@@ -91,7 +87,7 @@ class ImportCatalogCommand extends Command
     private function parseData(string $line): array
     {
         $line = html_entity_decode($line);
-        $line = str_replace("litres;", "", $line);
+        //$line = str_replace("litres;", "", $line);
         $parts = explode(";", $line);
         $data = [];
 
@@ -100,6 +96,23 @@ class ImportCatalogCommand extends Command
         $data['autorMiddleName'] = array_shift($parts);
         $data['bookFlibustaId'] = array_pop($parts);
         $data['bookData'] = implode(';', $parts);
+        $data['bookLanguage'] = null;
+        $data['bookYear']  = null;
+
+        $matches_language = [];
+        $matches_year = [];
+        preg_match("/\;([a-z]{2})\;/", $data['bookData'], $matches_language);
+        if (array_key_exists(1, $matches_language)) {
+            $data['bookLanguage'] = $matches_language[1];
+        }
+        preg_match("/\;([1-2][0-9]{3,4})\;/", $data['bookData'], $matches_year);
+        if (array_key_exists(1, $matches_year)) {
+            if (strlen($matches_year[1]) > 4) {
+                $data['bookYear'] = substr($matches_year[1], 0, 4);
+            } else {
+                $data['bookYear'] = $matches_year[1];
+            }
+        }
 
         return $data;
     }
@@ -111,14 +124,14 @@ class ImportCatalogCommand extends Command
         }
         $book->setBookData($data['bookData']);
         $book->setBookLanguage($data['bookLanguage']);
-        if (strlen($data['bookYear']) !== 0) {
+        if ((!is_null($data['bookYear'])) && (strlen($data['bookYear']) !== 0)) {
             $year = DateTime::createFromFormat('Y', $data['bookYear']);
             $book->setBookYear($year);
         }
         $book->setBookFlibustaId($data['bookFlibustaId']);
 
         $this->entityManager->persist($book);
-        $output->writeln(sprintf('Book %s imported with id %s', $book->getBookTitle(), $book->getId()));
+        $output->writeln(sprintf('Book %s imported with id %s', $book->getBookData(), $book->getId()));
 
         if (strlen($data['autorLastName']) !== 0) {
             $autor = $this->autorRepository->findOneBy(['autorLastName' => $data['autorLastName'], 'autorFirstName' => $data['autorFirstName'], 'autorMiddleName' => $data['autorMiddleName']]);

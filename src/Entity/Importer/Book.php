@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Importer;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\BookRepository;
@@ -17,10 +17,7 @@ class Book
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $bookTitle = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $bookSubtitle = null;
+    private ?string $bookData = null;
 
     #[ORM\Column(length: 2)]
     private ?string $bookLanguage = null;
@@ -34,34 +31,19 @@ class Book
     #[ORM\ManyToOne(inversedBy: 'autorBooks')]
     private ?Autor $autor = null;
 
-    #[ORM\ManyToOne(inversedBy: 'serieBooks')]
-    private ?Serie $serie = null;
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBookTitle(): ?string
+    public function getBookData(): ?string
     {
-        return $this->bookTitle;
+        return $this->bookData;
     }
 
-    public function setBookTitle(string $bookTitle): static
+    public function setBookData(string $bookData): static
     {
-        $this->bookTitle = $bookTitle;
-
-        return $this;
-    }
-
-    public function getBookSubtitle(): ?string
-    {
-        return $this->bookSubtitle;
-    }
-
-    public function setBookSubtitle(?string $bookSubtitle): static
-    {
-        $this->bookSubtitle = $bookSubtitle;
+        $this->bookData = $bookData;
 
         return $this;
     }
@@ -110,18 +92,6 @@ class Book
     public function setAutor(?Autor $autor): static
     {
         $this->autor = $autor;
-
-        return $this;
-    }
-
-    public function getSerie(): ?Serie
-    {
-        return $this->serie;
-    }
-
-    public function setSerie(?Serie $serie): static
-    {
-        $this->serie = $serie;
 
         return $this;
     }

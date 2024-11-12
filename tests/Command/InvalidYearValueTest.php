@@ -27,11 +27,9 @@ class InvalidYearValueTest extends KernelTestCase
         $this->assertStringContainsString('Autor first name: Святитель Игнатий', $output);
         $this->assertStringContainsString('Autor middle name:', $output);
 
-        $this->assertStringContainsString('Book title: Слово о смерти. Слово о человеке', $output);
-        $this->assertStringContainsString('Book subtitle:', $output);
+        $this->assertStringContainsString('Book data: Слово о смерти. Слово о человеке;;ru;20111;Наследие русского святителя 0', $output);
         $this->assertStringContainsString('Book language: ru', $output);
         $this->assertStringContainsString('Book year: 2011', $output);
-        $this->assertStringContainsString('Book serie: Наследие русского святителя 0', $output);
         $this->assertStringContainsString('Book flibusta id: 573701', $output);
     }
 }
