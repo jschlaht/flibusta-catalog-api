@@ -101,11 +101,11 @@ class ImportCatalogCommand extends Command
 
         $matches_language = [];
         $matches_year = [];
-        preg_match("/\;([a-z]{2})\;/", $data['bookData'], $matches_language);
+        preg_match("/;([a-z]{2});/", $data['bookData'], $matches_language);
         if (array_key_exists(1, $matches_language)) {
             $data['bookLanguage'] = $matches_language[1];
         }
-        preg_match("/\;([1-2][0-9]{3,4})\;/", $data['bookData'], $matches_year);
+        preg_match("/;([1-2][0-9]{3,4});/", $data['bookData'], $matches_year);
         if (array_key_exists(1, $matches_year)) {
             if (strlen($matches_year[1]) > 4) {
                 $data['bookYear'] = substr($matches_year[1], 0, 4);
