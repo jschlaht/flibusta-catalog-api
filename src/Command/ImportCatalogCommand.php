@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use ZipArchive;
 
 #[AsCommand(
     name: 'app:import-catalog',
@@ -41,6 +42,21 @@ class ImportCatalogCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $catalogFile = $input->getArgument('catalogfile');
+        if (is_null($catalogFile)) {
+            $catalogFolder = '/tmp/flibusta-catalog/';
+            $catalogFile = $catalogFolder . 'catalog.txt';
+            $catalogZipFile = '/tmp/catalog.zip';
+            $zipCatalog = file_get_contents('https://flibusta.is/catalog/catalog.zip');
+            file_put_contents($catalogZipFile, $zipCatalog);
+            $zip = new ZipArchive;
+            if ($zip->open($catalogZipFile) === TRUE) {
+                $zip->extractTo($catalogFolder);
+                $zip->close();
+                echo 'ok';
+            } else {
+                echo 'failed';
+            }
+        }
 
         if ($catalogFile) {
             $io->note(sprintf('You passed an argument: %s', $catalogFile));
@@ -70,6 +86,9 @@ class ImportCatalogCommand extends Command
                     unset($data);
                     $io->note(sprintf('Imported %s from %s', $key, $numberAllDataLines));
                 }
+                unlink($catalogFile);
+                rmdir($catalogFolder);
+                unlink($catalogZipFile);
             } else {
                 $io->note(sprintf('You need a catalogfile for import'));
                 return Command::INVALID;
@@ -101,9 +120,9 @@ class ImportCatalogCommand extends Command
 
         $matches_language = [];
         $matches_year = [];
-        preg_match("/;([a-z]{2});/", $data['bookData'], $matches_language);
+        preg_match("/;([a-zA-Z]{2});/", $data['bookData'], $matches_language);
         if (array_key_exists(1, $matches_language)) {
-            $data['bookLanguage'] = $matches_language[1];
+            $data['bookLanguage'] = strtolower($matches_language[1]);
         }
         preg_match("/;([1-2][0-9]{3,4});/", $data['bookData'], $matches_year);
         if (array_key_exists(1, $matches_year)) {
