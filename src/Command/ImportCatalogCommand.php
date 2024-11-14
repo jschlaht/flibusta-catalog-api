@@ -120,7 +120,7 @@ class ImportCatalogCommand extends Command
 
         $matches_language = [];
         $matches_year = [];
-        preg_match("/;([a-zA-Z]{2});/", $data['bookData'], $matches_language);
+        preg_match("/;([a-zA-Z]{2,3});/", $data['bookData'], $matches_language);
         if (array_key_exists(1, $matches_language)) {
             $data['bookLanguage'] = strtolower($matches_language[1]);
         }
