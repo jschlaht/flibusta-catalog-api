@@ -2,13 +2,11 @@
 
 namespace App\Entity\Importer;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\BookRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
-#[ApiResource]
 class Book
 {
     #[ORM\Id]
@@ -19,7 +17,7 @@ class Book
     #[ORM\Column(length: 255)]
     private ?string $bookData = null;
 
-    #[ORM\Column(length: 2)]
+    #[ORM\Column(length: 5, nullable: true)]
     private ?string $bookLanguage = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
@@ -28,8 +26,8 @@ class Book
     #[ORM\Column]
     private ?int $bookFlibustaId = null;
 
-    #[ORM\ManyToOne(inversedBy: 'autorBooks')]
-    private ?Autor $autor = null;
+    #[ORM\ManyToOne(inversedBy: 'books')]
+    private ?Autor $bookAutor = null;
 
     public function getId(): ?int
     {
@@ -53,7 +51,7 @@ class Book
         return $this->bookLanguage;
     }
 
-    public function setBookLanguage(string $bookLanguage): static
+    public function setBookLanguage(?string $bookLanguage): static
     {
         $this->bookLanguage = $bookLanguage;
 
@@ -65,7 +63,7 @@ class Book
         return $this->bookYear;
     }
 
-    public function setBookYear(\DateTimeInterface $bookYear): static
+    public function setBookYear(?\DateTimeInterface $bookYear): static
     {
         $this->bookYear = $bookYear;
 
@@ -84,14 +82,14 @@ class Book
         return $this;
     }
 
-    public function getAutor(): ?Autor
+    public function getBookAutor(): ?Autor
     {
-        return $this->autor;
+        return $this->bookAutor;
     }
 
-    public function setAutor(?Autor $autor): static
+    public function setBookAutor(?Autor $bookAutor): static
     {
-        $this->autor = $autor;
+        $this->bookAutor = $bookAutor;
 
         return $this;
     }

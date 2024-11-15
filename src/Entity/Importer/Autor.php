@@ -27,12 +27,12 @@ class Autor
     /**
      * @var Collection<int, Book>
      */
-    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'autor')]
-    private Collection $autorBooks;
+    #[ORM\OneToMany(targetEntity: Book::class, mappedBy: 'bookAutor')]
+    private Collection $books;
 
     public function __construct()
     {
-        $this->autorBooks = new ArrayCollection();
+        $this->books = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -79,27 +79,27 @@ class Autor
     /**
      * @return Collection<int, Book>
      */
-    public function getAutorBooks(): Collection
+    public function getBooks(): Collection
     {
-        return $this->autorBooks;
+        return $this->books;
     }
 
-    public function addAutorBook(Book $autorBook): static
+    public function addBook(Book $book): static
     {
-        if (!$this->autorBooks->contains($autorBook)) {
-            $this->autorBooks->add($autorBook);
-            $autorBook->setAutor($this);
+        if (!$this->books->contains($book)) {
+            $this->books->add($book);
+            $book->setBookAutor($this);
         }
 
         return $this;
     }
 
-    public function removeAutorBook(Book $autorBook): static
+    public function removeBook(Book $book): static
     {
-        if ($this->autorBooks->removeElement($autorBook)) {
+        if ($this->books->removeElement($book)) {
             // set the owning side to null (unless already changed)
-            if ($autorBook->getAutor() === $this) {
-                $autorBook->setAutor(null);
+            if ($book->getBookAutor() === $this) {
+                $book->setBookAutor(null);
             }
         }
 

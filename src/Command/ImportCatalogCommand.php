@@ -86,9 +86,15 @@ class ImportCatalogCommand extends Command
                     unset($data);
                     $io->note(sprintf('Imported %s from %s', $key, $numberAllDataLines));
                 }
-                unlink($catalogFile);
-                rmdir($catalogFolder);
-                unlink($catalogZipFile);
+                if (!$input->hasArgument('catalogfile')) {
+                    unlink($catalogFile);
+                    if (isset($catalogFolder) && file_exists($catalogFolder)) {
+                        rmdir($catalogFolder);
+                    }
+                    if (isset($catalogZipFile) && file_exists($catalogZipFile)) {
+                        unlink($catalogZipFile);
+                    }
+                }
             } else {
                 $io->note(sprintf('You need a catalogfile for import'));
                 return Command::INVALID;
@@ -142,7 +148,9 @@ class ImportCatalogCommand extends Command
             $book = new Book();
         }
         $book->setBookData($data['bookData']);
-        $book->setBookLanguage($data['bookLanguage']);
+        if (!is_null($data['bookLanguage'])) {
+            $book->setBookLanguage($data['bookLanguage']);
+        }
         if ((!is_null($data['bookYear'])) && (strlen($data['bookYear']) !== 0)) {
             $year = DateTime::createFromFormat('Y', $data['bookYear']);
             $book->setBookYear($year);
@@ -160,7 +168,7 @@ class ImportCatalogCommand extends Command
                 $autor->setAutorFirstName($data['autorFirstName']);
                 $autor->setAutorMiddleName($data['autorMiddleName']);
             }
-            $autor->addAutorBook($book);
+            $autor->addBook($book);
             $this->entityManager->persist($autor);
             $output->writeln(sprintf('Autor %s imported with id %s', $autor->getAutorLastName(), $autor->getId()));
         }
