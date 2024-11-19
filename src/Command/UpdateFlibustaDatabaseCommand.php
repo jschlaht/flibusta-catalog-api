@@ -38,9 +38,14 @@ class UpdateFlibustaDatabaseCommand extends Command
             $io->note(sprintf('You passed an argument: %s', $arg1));
         }
 
-        if ($input->getOption('option1')) {
-            // ...
-        }
+        // download sql dump for tables to tmp
+
+        // get flibusta em
+
+        // execute sql
+        //
+        //
+
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 
