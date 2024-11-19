@@ -12,6 +12,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use ZipArchive;
@@ -35,6 +36,13 @@ class ImportCatalogCommand extends Command
     {
         $this
             ->addArgument('catalogfile', InputArgument::OPTIONAL, 'path to catalog file')
+            ->addOption(
+                   'importtype',
+                   null,
+                   InputOption::VALUE_OPTIONAL,
+                   'import all or only new books',
+                   'all'
+            )
         ;
     }
 
@@ -42,6 +50,7 @@ class ImportCatalogCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $catalogFile = $input->getArgument('catalogfile');
+        $importType = $input->getOption('importtype');
         if (is_null($catalogFile)) {
             $catalogFolder = '/tmp/flibusta-catalog/';
             $catalogFile = $catalogFolder . 'catalog.txt';
@@ -71,18 +80,17 @@ class ImportCatalogCommand extends Command
                     $io->note(sprintf('First line: %s', $line));
                     $data = $this->parseData($line);
 
-                    $io->note(sprintf('Autor last name: %s', $data['autorLastName']));
-                    $io->note(sprintf('Autor first name: %s', $data['autorFirstName']));
-                    $io->note(sprintf('Autor middle name: %s', $data['autorMiddleName']));
-                    $io->note(sprintf('Book data: %s', $data['bookData']));
-                    $io->note(sprintf('Book language: %s', $data['bookLanguage']));
-                    $io->note(sprintf('Book year: %s', $data['bookYear']));
-                    $io->note(sprintf('Book flibusta id: %s', $data['bookFlibustaId']));
-
-                    $this->importData($data, $output);
-                    if ($key % 8 === 0) {
-                        $this->entityManager->getUnitOfWork()->clear();
+                    if ($importType === 'all') {
+                        $io->note(sprintf('Autor last name: %s', $data['autorLastName']));
+                        $io->note(sprintf('Autor first name: %s', $data['autorFirstName']));
+                        $io->note(sprintf('Autor middle name: %s', $data['autorMiddleName']));
+                        $io->note(sprintf('Book data: %s', $data['bookData']));
+                        $io->note(sprintf('Book language: %s', $data['bookLanguage']));
+                        $io->note(sprintf('Book year: %s', $data['bookYear']));
+                        $io->note(sprintf('Book flibusta id: %s', $data['bookFlibustaId']));
                     }
+
+                    $this->importData($data, $output, $key, $importType);
                     unset($data);
                     $io->note(sprintf('Imported %s from %s', $key, $numberAllDataLines));
                 }
@@ -141,9 +149,12 @@ class ImportCatalogCommand extends Command
 
         return $data;
     }
-    private function importData(array $data, OutputInterface $output): void
+    private function importData(array $data, OutputInterface $output, int $key, string $importType): void
     {
         $book = $this->bookRepository->findOneBy(['bookFlibustaId' => $data['bookFlibustaId']]);
+        if ($importType === 'new' && $book instanceof Book) {
+            return;
+        }
         if (is_null($book)) {
             $book = new Book();
         }
@@ -175,5 +186,8 @@ class ImportCatalogCommand extends Command
 
         $this->entityManager->flush();
         $this->entityManager->clear();
+        if ($key % 8 === 0) {
+            $this->entityManager->getUnitOfWork()->clear();
+        }
     }
 }
